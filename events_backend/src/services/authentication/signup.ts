@@ -1,10 +1,12 @@
 import { supabaseAdmin } from '../../config/supabase';
-import UserModel from '../../models/users';
+import MoradorModel from '../../models/morador';
 
 interface SignupData {
   email: string;
   password: string;
-  fullName?: string;
+  fullName: string;
+  cpf: string;
+  apartamento: string;
   metadata?: any;
 }
 
@@ -15,6 +17,7 @@ interface SignupResponse {
       id: string | undefined;
       email: string | undefined;
       full_name: string | undefined;
+      apartamento: string;
     };
     needsVerification: boolean;
   };
@@ -27,23 +30,23 @@ interface SignupResponse {
 
 export class SignupService {
   private signupData: SignupData;
-  private userModel: UserModel;
+  private moradorModel: MoradorModel;
 
   constructor(signupData: SignupData) {
     this.signupData = signupData;
-    this.userModel = new UserModel(supabaseAdmin);
+    this.moradorModel = new MoradorModel(supabaseAdmin);
   }
 
   async execute(): Promise<SignupResponse> {
     try {
-      const { email, password, fullName, metadata } = this.signupData;
+      const { email, password, fullName, cpf, apartamento, metadata } = this.signupData;
 
-      if (!email || !password) {
+      if (!email || !password || !fullName || !cpf || !apartamento) {
         return {
           success: false,
           error: {
             error: 'Dados obrigatórios',
-            message: 'Email e senha são obrigatórios',
+            message: 'Email, senha, nome completo, CPF e apartamento são obrigatórios',
             status: 400
           }
         };
@@ -60,48 +63,73 @@ export class SignupService {
         };
       }
 
-      const { data, error } = await supabaseAdmin.auth.admin.createUser({
+      // Verificar se CPF já existe
+      try {
+        const existingMorador = await this.moradorModel.get(cpf);
+        if (existingMorador) {
+          return {
+            success: false,
+            error: {
+              error: 'CPF já cadastrado',
+              message: 'Já existe um morador cadastrado com este CPF',
+              status: 400
+            }
+          };
+        }
+      } catch (error) {
+        // CPF não existe, pode prosseguir
+      }
+
+      // Criar usuário no Supabase Auth
+      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
         user_metadata: {
           full_name: fullName,
+          cpf: cpf,
+          apartamento: apartamento
         }
       });
 
-      if (error) { 
-        return { 
+      if (authError || !authData.user) {
+        return {
+          success: false,
+          error: {
+            error: 'Erro ao criar usuário',
+            message: authError?.message || 'Erro ao criar usuário na autenticação',
+            status: 400
+          }
+        };
+      }
+
+      // Criar morador na tabela de moradores (sem senha)
+      const morador = await this.moradorModel.insert({
+        cpf,
+        nome: fullName,
+        apartamento: apartamento,
+        created_at: new Date()
+      });
+
+      if (!morador.cpf) { 
+        return {
           success: false, 
           error: {
-            error: 'Erro ao criar usuário', 
-            message: error.message, 
+            error: 'Erro ao criar morador', 
+            message: 'Erro ao criar morador na base de dados', 
             status: 400
           }
         } 
       } 
-      
-      // Criar usuário na tabela de usuários, se necessário
-      const user = await this.userModel.insert({
-        id: String(data.user?.id),
-        name: fullName??'',
-        email,
-        additional_info: {},
-        phone: metadata?.phone??'',
-        role: 'user',
-        permissions: ['user'],
-        created_at: new Date(),
-        profile_picture: null
-      });
-
-      if (!user.id) { return {success: false, error: {error: 'Erro ao criar usuário', message: 'Erro ao criar usuário', status: 400}} } 
 
       return {
         success: true,
         data: {
           user: {
-            id: data.user?.id,
-            email: data.user?.email,
-            full_name: data.user?.user_metadata?.full_name
+            id: authData.user.id,
+            email: authData.user.email,
+            full_name: morador.nome,
+            apartamento: morador.apartamento
           },
           needsVerification: false
         }

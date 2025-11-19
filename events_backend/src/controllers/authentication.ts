@@ -14,9 +14,9 @@ export class AuthController {
 
   // Cadastro de usuário
   async signup() {
-    const { email, password, fullName, metadata } = this.req.body;
+    const { email, password, fullName, cpf, apartamento, metadata } = this.req.body;
 
-    const signupService = new SignupService({ email, password, fullName, metadata });
+    const signupService = new SignupService({ email, password, fullName, cpf, apartamento, metadata });
     const result = await signupService.execute();
 
     if (!result.success) {
@@ -29,7 +29,7 @@ export class AuthController {
 
     return SuccessResponse(this.res, {
       status: 201,
-      message: 'Usuário criado com sucesso',
+      message: 'Morador criado com sucesso',
       data: {
         user: result.data!.user,
         needsVerification: result.data!.needsVerification

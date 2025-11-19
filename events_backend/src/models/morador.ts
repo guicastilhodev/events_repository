@@ -3,7 +3,6 @@ import { SupabaseClient } from "@supabase/supabase-js";
 export interface Morador {
   cpf: string;
   nome: string;
-  senha: string;
   apartamento: string;
   created_at?: Date;
   updated_at?: Date;
@@ -11,7 +10,6 @@ export interface Morador {
 
 export interface PatchMorador {
   nome?: string;
-  senha?: string;
   apartamento?: string;
 }
 
