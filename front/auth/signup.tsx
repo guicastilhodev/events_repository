@@ -111,7 +111,7 @@ export default function SignupPage() {
               placeholder="000.000.000-00"
               value={formData.cpf}
               onChange={handleCPFChange}
-              maxLength="14"
+              maxLength={14}
               required
               className="border-input bg-secondary"
             />
