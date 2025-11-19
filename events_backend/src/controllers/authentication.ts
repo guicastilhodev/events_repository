@@ -22,8 +22,8 @@ export class AuthController {
     if (!result.success) {
       return ErrorResponse(this.res, {
         status: result.error!.status,
-        error: "Error on create user",
-        message: "If this problem persists, please contact support"
+        error: result.error!.error,
+        message: result.error!.message
       });
     }
 
