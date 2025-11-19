@@ -1,1 +1,13 @@
-{"/_not-found/page":"/_not-found","/auth/login/page":"/auth/login","/auth/signup/page":"/auth/signup","/page":"/"}
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/api/auth/forgot-password/route": "/api/auth/forgot-password",
+  "/api/auth/login/route": "/api/auth/login",
+  "/api/auth/signup/route": "/api/auth/signup",
+  "/cadastro/page": "/cadastro",
+  "/dashboard/criar-evento/page": "/dashboard/criar-evento",
+  "/dashboard/page": "/dashboard",
+  "/login/page": "/login",
+  "/page": "/",
+  "/recuperar-senha/page": "/recuperar-senha"
+}

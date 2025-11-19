@@ -103,7 +103,6 @@ export class SignupService {
         };
       }
 
-      // Criar morador na tabela de moradores (sem senha)
       const morador = await this.moradorModel.insert({
         cpf,
         nome: fullName,
