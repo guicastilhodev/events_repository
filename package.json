@@ -1,0 +1,49 @@
+{
+  "name": "event-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "lint": "echo \"Linting não configurado ainda\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migration:create": "node scripts/create-migration.js",
+    "migration:apply": "node scripts/migration-manager.js apply",
+    "migration:rollback": "node scripts/migration-manager.js rollback",
+    "migration:status": "node scripts/migration-manager.js status",
+    "migration:reset": "node scripts/migration-manager.js reset",
+    "migration:help": "node scripts/migration-manager.js help",
+    "db:local:start": "supabase start",
+    "db:local:stop": "supabase stop",
+    "db:local:reset": "supabase db reset",
+    "db:push": "supabase db push",
+    "db:pull": "supabase db pull"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.56.1",
+    "axios": "^1.12.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^4.21.2",
+    "multer": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.23",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.3.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
