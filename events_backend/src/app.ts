@@ -2,14 +2,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
+
 import authentication from './routes/authentication';
-import users from './routes/users';
-import organizations from './routes/organizations';
-import entities from './routes/entities';
-import posts from './routes/posts';
-import subscribers from './routes/subscribers';
-import bills from './routes/bills';
-import subscriptions from './routes/subscriptions';
+import events from './routes/events';
 
 dotenv.config();
 
@@ -21,13 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rotas
 app.use('/auth', authentication);
-app.use('/users', users);
-app.use('/organizations', organizations);
-app.use('/entities', entities);
-app.use('/posts', posts);
-app.use('/subscribers', subscribers);
-app.use('/subscriptions', subscriptions);
-app.use('/bills', bills);
+app.use('/events', events);
 
 // Rota raiz e healthcheck
 app.get('/', (req: Request, res: Response) => {
