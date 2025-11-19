@@ -41,8 +41,8 @@ export class SigninService {
         return {
           success: false,
           error: {
-            error: 'Dados obrigat�rios',
-            message: 'Email e senha s�o obrigat�rios',
+            error: 'Dados obrigatórios',
+            message: 'Email e senha são obrigatórios',
             status: 400
           }
         };
@@ -57,7 +57,7 @@ export class SigninService {
         return {
           success: false,
           error: {
-            error: 'Credenciais inv�lidas',
+            error: 'Credenciais inválidas',
             message: error.message,
             status: 401
           }

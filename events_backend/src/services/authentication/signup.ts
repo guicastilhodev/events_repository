@@ -1,6 +1,5 @@
 import { supabaseAdmin } from '../../config/supabase';
 import UserModel from '../../models/users';
-import OrganizationModel from '../../models/organizations';
 
 interface SignupData {
   email: string;
@@ -29,12 +28,10 @@ interface SignupResponse {
 export class SignupService {
   private signupData: SignupData;
   private userModel: UserModel;
-  private organizationModel: OrganizationModel;
 
   constructor(signupData: SignupData) {
     this.signupData = signupData;
     this.userModel = new UserModel(supabaseAdmin);
-    this.organizationModel = new OrganizationModel(supabaseAdmin);
   }
 
   async execute(): Promise<SignupResponse> {
@@ -63,34 +60,35 @@ export class SignupService {
         };
       }
 
-      const organization = await this.organizationModel.insert({
-        name: fullName + " Organization",
-        cnpj: metadata?.cnpj??'',
-        additional_info: {}
-      });
-
-      if (!organization.id) { return {success: false, error: {error: 'Erro ao criar organização', message: 'Erro ao criar organização', status: 400}} } 
-
       const { data, error } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
         user_metadata: {
-          organization_id: organization.id,
+          full_name: fullName,
         }
       });
 
-      if (error) { return { success: false, error: {error: 'Erro ao criar usuário', message: error.message, status: 400}} } 
+      if (error) { 
+        return { 
+          success: false, 
+          error: {
+            error: 'Erro ao criar usuário', 
+            message: error.message, 
+            status: 400
+          }
+        } 
+      } 
       
+      // Criar usuário na tabela de usuários, se necessário
       const user = await this.userModel.insert({
         id: String(data.user?.id),
         name: fullName??'',
         email,
-        organization_id: organization.id,
         additional_info: {},
         phone: metadata?.phone??'',
-        role: 'admin',
-        permissions: ['admin'],
+        role: 'user',
+        permissions: ['user'],
         created_at: new Date(),
         profile_picture: null
       });
